@@ -295,6 +295,9 @@ class PathOptimizer(Optimizer):
             self._edge_to_op_dir[self._edges_map[id]] = self._edges_map[((id[1],id[0]))]
 
     def _nodes_to_edges(self, paths):
+        """
+            return: np.stack(paths_arr){用边id表示路径的路径表}, commodities{节点对} 这两个一级索引是一一对应的。
+        """
         paths_arr = []
         commodities = []
         self._path_to_commodity = dict()
@@ -310,7 +313,7 @@ class PathOptimizer(Optimizer):
                     p__ = np.zeros((int(self._num_edges),))
                     for k in p_:
                         p__[k] = 1  # 边的list
-                    paths_arr.append(p__)   #paths_arr[comm_id][]
+                    paths_arr.append(p__)
                     self._path_to_commodity[cntr] = (i, j)
                     self._path_to_idx[cntr] = idx
                     cntr += 1
