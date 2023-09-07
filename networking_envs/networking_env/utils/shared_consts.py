@@ -82,4 +82,5 @@ class TrainingConsts:
 
 class FolderPathCosts:
     BASE_PATH_LOCAL = "LOCAL/networking_envs"
+    # BASE_PATH_LOCAL = "D:/BobbySpace/AINET/papers/2.DOTE\DOTE/networking_envs"
     BASE_PATH_REMOTE = "REMOTE/networking_envs"

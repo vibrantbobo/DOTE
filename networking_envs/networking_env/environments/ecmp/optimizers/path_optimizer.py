@@ -242,19 +242,19 @@ class PathOptimizer(Optimizer):
         #                                 self._num_paths))
         commodities_to_paths = lil_matrix((self._num_nodes * (self._num_nodes - 1), self._num_paths))
         commodities_path_cntr = np.zeros((self._num_nodes * (self._num_nodes - 1), ))
-        commid = 0
-        pathid = 0
+        commid = 0  # 节点对id
+        pathid = 0  # 路径id
         for src in range(self._num_nodes):
             for dst in range(self._num_nodes):
                 if src == dst:
                     continue
-                for _ in self._pij[(src, dst)]:
-                    commodities_to_paths[commid, pathid] = 1
-                    commodities_path_cntr[commid] += 1
+                for _ in self._pij[(src, dst)]: # 节点对之间的所有路径
+                    commodities_to_paths[commid, pathid] = 1    # 节点对与路径id
+                    commodities_path_cntr[commid] += 1  # 节点对的所有路径数？
                     pathid += 1
                 commid += 1 
         
-        self._commodities_to_paths = csr_matrix(commodities_to_paths)
+        self._commodities_to_paths = csr_matrix(commodities_to_paths)   # 压缩稀疏行矩阵{}
         self._commodities_path_counter = commodities_path_cntr
 
     def _nodes_to_edges1(self, paths):
@@ -306,11 +306,11 @@ class PathOptimizer(Optimizer):
                     continue
                 idx = 0
                 for p in paths[(i, j)]:
-                    p_ = [self._edges_map[e] for e in p]
+                    p_ = [self._edges_map[e] for e in p]    # edge_id
                     p__ = np.zeros((int(self._num_edges),))
                     for k in p_:
-                        p__[k] = 1
-                    paths_arr.append(p__)
+                        p__[k] = 1  # 边的list
+                    paths_arr.append(p__)   #paths_arr[comm_id][]
                     self._path_to_commodity[cntr] = (i, j)
                     self._path_to_idx[cntr] = idx
                     cntr += 1

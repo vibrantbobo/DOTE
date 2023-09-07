@@ -192,12 +192,14 @@ def loss_fn_maxflow_maxconc(y_pred_batch, y_true_batch, env):
     
     return ret, ret_val
     
-    
+# 解析执行参数（flags）
 props = parse_args(sys.argv[1:])
 env = history_env.ECMPHistoryEnv(props)
-
+# 创建稀疏矩阵
 ctp_coo = env._optimizer._commodities_to_paths.tocoo()
+# 化为稀疏矩阵Tensor
 commodities_to_paths = torch.sparse_coo_tensor(np.vstack((ctp_coo.row, ctp_coo.col)), torch.DoubleTensor(ctp_coo.data), torch.Size(ctp_coo.shape))
+
 pte_coo = env._optimizer._paths_to_edges.tocoo()
 paths_to_edges = torch.sparse_coo_tensor(np.vstack((pte_coo.row, pte_coo.col)), torch.DoubleTensor(pte_coo.data), torch.Size(pte_coo.shape))
 

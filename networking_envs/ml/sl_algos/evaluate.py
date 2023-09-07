@@ -69,4 +69,5 @@ def main(args):
 
 if __name__ == "__main__":
     import sys
+    print('args in evaluate.py: %s'%sys.argv[1:])
     main(sys.argv[1:])

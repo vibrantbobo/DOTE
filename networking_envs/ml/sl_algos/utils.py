@@ -1,3 +1,5 @@
+import logging
+
 from data_gen import utils as DU
 from networking_env.utils.shared_consts import SizeConsts
 import numpy as np
@@ -250,6 +252,7 @@ def get_all_cplex_res(props, y_hat, y):
         tm = y_hat[i, :]
         next_tm = y[i, :]
         factor_units = 1.0 #SizeConsts.ONE_Mb
+        print(f"DU.get_opt_cplex(...path={props.base_path+'/data/'+props.ecmp_topo+'/' + props.opts_dir + '/'}...)")
         res_str = DU.get_opt_cplex(props, tm * factor_units, next_tm * factor_units, opt_function=props.opt_function,
                                    use_cplex=False, idx=cntr, path=props.base_path+'/data/'+props.ecmp_topo+'/' + props.opts_dir + '/')
         cntr += 1

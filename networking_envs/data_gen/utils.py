@@ -1,3 +1,6 @@
+import os
+import subprocess
+
 from networking_env.utils.shared_consts import SizeConsts
 import joblib
 from subprocess import PIPE, Popen
@@ -5,7 +8,7 @@ import numpy as np
 import shutil
 
 def jar_cplex_wrapper(cplex_path, args, all_output=True):
-    process = Popen(['java'] + cplex_path + ['-jar']+args, stdout=PIPE, stderr=PIPE)
+    process = Popen(['java'] + cplex_path + ['-jar']+args, stdout=PIPE, stderr=PIPE,shell=True)
     
     stdout, stderr = process.communicate()
     stdout = stdout.decode("utf-8")
@@ -23,6 +26,7 @@ def jar_gurobi_wrapper(props, cplex_path, args, all_output=True):
 
     # change JAR file to get filename instead of actual params.
     # this is done because of PATH size limit
+    # print(os.getcwd())
     with open('param.tmp', 'w') as file:
         for k in range(len(args)):
             param = args[k]
@@ -32,9 +36,13 @@ def jar_gurobi_wrapper(props, cplex_path, args, all_output=True):
             file.write(str(param) + '\n')
 
     #create a copy of param.tmp in "opts"
-    #shutil.copy("param.tmp", props.opts_dir + "/param" + str(args[-2]) + ".tmp")
+    # shutil.copy("param.tmp", props.opts_dir + "/param" + str(args[-2]) + ".tmp")
     #return [': 1']
-    process = Popen(['java'] + ['-jar'] + [args[0]] + ['param.tmp'], stdout=PIPE, stderr=PIPE)
+
+    # args: ['java', '-jar', 'D:\\BobbySpace\\AINET\\papers\\2.DOTE\\DOTE\\networking_envs/lib/runner_gurobi.jar', 'param.tmp']
+    # process = Popen(['java'] + ['-jar'] + [args[0]] + ['param.tmp'], stdout=PIPE, stderr=PIPE)
+    process = Popen(['java'] + ['-jar'] + [args[0]] + ['param.tmp'], stdout=PIPE, stderr=PIPE,shell=True)
+
     stdout, stderr = process.communicate()
     stdout = stdout.decode("utf-8")
     stderr = stderr.decode('utf-8')
@@ -49,7 +57,7 @@ def jar_gurobi_wrapper(props, cplex_path, args, all_output=True):
         import time;
         time.sleep(60)
 
-        process = Popen(['java'] + ['-jar'] + [args[0]] + ['param.tmp'], stdout=PIPE, stderr=PIPE)
+        process = Popen(['java'] + ['-jar'] + [args[0]] + ['param.tmp'], stdout=PIPE, stderr=PIPE,shell=True)
 
         stdout, stderr = process.communicate()
         stdout = stdout.decode("utf-8")
