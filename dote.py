@@ -32,15 +32,17 @@ class DmDataset(Dataset):
         np_tms_flat = np_tms.flatten('F')
 
         assert (len(tms) == len(opts))
+        # 划分成H长的样本，类似滑动窗口，所以共有（total_num-H+1）个
         X_ = []
         for histid in range(len(tms) - props.hist_len):
             start_idx = histid * num_nodes * (num_nodes - 1)
             end_idx = start_idx + props.hist_len * num_nodes * (num_nodes - 1)
             X_.append(np_tms_flat[start_idx:end_idx])
 
-        self.X = np.asarray(X_)
+        self.X = np.asarray(X_) # 步长为H的流量需求样本
+        #
         self.y = np.asarray([np.append(tms[i], opts[i]) for i in range(props.hist_len, len(opts))])
-
+        print(self.y)
 
     # number of rows in the dataset
     def __len__(self):

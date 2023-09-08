@@ -238,6 +238,10 @@ class PathOptimizer(Optimizer):
         return csr_matrix(weights_to_edges), weights_of_other_edges
 
     def _make_paths_params(self):
+        """
+        self._commodities_to_paths   # 压缩稀疏行矩阵{}，[i,j]之间有路径
+        self._commodities_path_counter  # 节点对之间的路径数
+        """
         #commodities_to_paths = np.zeros((self._num_nodes * (self._num_nodes - 1),
         #                                 self._num_paths))
         commodities_to_paths = lil_matrix((self._num_nodes * (self._num_nodes - 1), self._num_paths))
@@ -250,7 +254,7 @@ class PathOptimizer(Optimizer):
                     continue
                 for _ in self._pij[(src, dst)]: # 节点对之间的所有路径
                     commodities_to_paths[commid, pathid] = 1    # 节点对与路径id
-                    commodities_path_cntr[commid] += 1  # 节点对的所有路径数？
+                    commodities_path_cntr[commid] += 1  # 节点对的所有路径数
                     pathid += 1
                 commid += 1 
         
