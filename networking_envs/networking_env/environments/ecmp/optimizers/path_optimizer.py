@@ -215,6 +215,7 @@ class PathOptimizer(Optimizer):
             pij = self._paths_from_flow()    
         self._paths_to_edges, self._commodities_paths = self._nodes_to_edges(pij)
 
+        # alll_paths: 1098条路径，每条路径用长为72(共有72个边)的数组表示
         all_paths, _ = self._nodes_to_edges(pij)
         self._paths_to_edges = csr_matrix(all_paths)
         self._num_paths = all_paths.shape[0]
@@ -253,8 +254,8 @@ class PathOptimizer(Optimizer):
                 if src == dst:
                     continue
                 for _ in self._pij[(src, dst)]: # 节点对之间的所有路径
-                    commodities_to_paths[commid, pathid] = 1    # 节点对与路径id
-                    commodities_path_cntr[commid] += 1  # 节点对的所有路径数
+                    commodities_to_paths[commid, pathid] = 1    # 节点对与路径id,节点对在路径上有流量?
+                    commodities_path_cntr[commid] += 1  # 节点对上的路径数
                     pathid += 1
                 commid += 1 
         
