@@ -308,6 +308,8 @@ elif props.so_mode == SOMode.TEST: #test
                 pred = model(inputs)
                 test_loss, test_loss_val = loss_fn(pred, targets, env)
                 test_losses.append(test_loss_val)
+                tests.set_postfix(loss_val=test_loss_val)
+
             avg_loss = sum(test_losses) / len(test_losses)
             print(f"Test Error: \n Avg loss: {avg_loss:>8f} \n")
             #print statistics to file
@@ -328,3 +330,22 @@ elif props.so_mode == SOMode.TEST: #test
                 with open(props.graph_base_path + '/' + props.ecmp_topo + '/' + 'concurrent_flow_cdf.txt', 'w') as f:
                     for v in concurrent_flow_cdf:
                         f.write(str(v / len(dists)) + '\n')
+# elif props.so_mode == 'my_test':
+#     # create the dataset
+#     test_dataset = DmDataset(props, env, True)
+#     # create a data loader for the test set
+#     test_dl = DataLoader(test_dataset, batch_size=1, shuffle=False)
+#     # load the model
+#     model = torch.load('model_dote.pkl')
+#     model.eval()
+#     with torch.no_grad():
+#         with tqdm(test_dl) as tests:
+#             test_losses = []
+#             for (inputs, targets) in tests:
+#                 pred = model(inputs)
+#                 test_loss, test_loss_val = loss_fn(pred, targets, env)
+#                 test_losses.append(test_loss_val)
+#                 tests.set_postfix(loss_val=test_loss_val)
+#
+#             avg_loss = sum(test_losses) / len(test_losses)
+#             print(f"Test Error: \n Avg loss: {avg_loss:>8f} \n")

@@ -4,6 +4,7 @@ import glob
 import subprocess
 
 opts_dir_prefix = 'opts_'
+# 这两个节点数相等
 topology_name = 'GEANT'
 paths_from = 'sp'
 # paths_from = './GEANT/'

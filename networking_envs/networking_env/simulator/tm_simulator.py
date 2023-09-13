@@ -24,6 +24,7 @@ class TMSimulator(object):
                                     props.time,
                                     test_hist_files_latent,
                                     max_steps=self._props.max_path_length + self._props.hist_len)
+        # self._my_test_hist=
 
         props.num_train_histories = self._train_hist.num_tms()
         props.num_test_histories = self._test_hist.num_tms()
@@ -35,7 +36,10 @@ class TMSimulator(object):
         self._cur_hist = self._test_hist if val == True else self._train_hist
         if val is True:
             self._cur_hist.reset()
-        
+
+    # def get_my_test(self):
+    #     return self.
+
     def reset(self):
         self._cur_time = 0
         self._cur_hist.reset()

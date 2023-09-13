@@ -5,7 +5,9 @@ import numpy as np
 from numpy import random
 
 src_dir = "zoo_topologies"
-network_name = "Abilene"
+# network_name = "Abilene"
+# network_name = "Abvt"
+network_name = "Aconet"
 dest_dir = network_name
 
 #additional configuration variables
