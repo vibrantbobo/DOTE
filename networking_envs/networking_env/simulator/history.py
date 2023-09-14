@@ -5,11 +5,12 @@ import tqdm
 
 class HistoryFromText(object):
     HIST_ID = 0
+
     # TODO create base history file?
 
     def __init__(self, fname, tm_length_func=lambda: 5, max_steps=10):
         HistoryFromText.HIST_ID += 1
-        
+
         self._tms = []
         self._tm_times = []
         self._tm_ind = 0
@@ -17,37 +18,37 @@ class HistoryFromText(object):
 
         self._populate(fname, max_steps, tm_length_func)
         self._opts = self._read_opt(fname, max_steps)
-    
+
     def ttl_time(self):
         # TODO do we get off by one here?
         return sum(self._tm_times)
-    
+
     def get_next(self):
-        tm = self._tms[self._tm_ind] 
+        tm = self._tms[self._tm_ind]
         tm_time = self._tm_times[self._tm_ind]
-        opt_val = self._opts[self._tm_ind] if self._opts else 1.0   # 处理异常opt值？
-        self._tm_ind = (self._tm_ind+1)%len(self._tms)
+        opt_val = self._opts[self._tm_ind] if self._opts else 1.0  # 处理异常opt值？
+        self._tm_ind = (self._tm_ind + 1) % len(self._tms)
         return tm, tm_time, opt_val
-    
+
     def is_over(self):
         return self._tm_ind == len(self._tms)
-    
+
     def __len__(self):
         return len(self._tms)
-    
+
     def reset(self):
         self._tm_ind = 0
-    
+
     def _parse_tm_line(self, line):
         tm = np.array([np.float64(_) for _ in line.split(" ") if _], dtype=np.float64)
         num_nodes = int(np.sqrt(tm.shape[0]))
         tm = tm.reshape((num_nodes, num_nodes))
-        
+
         return (tm - tm * np.eye(num_nodes)).flatten()
 
 
 class Histories(object):
-    
+
     def __init__(self, files_tms, htype, num_nodes, time, files_latent, tm_length_func=lambda: 5, max_steps=60):
         self._tms = []
         self._latent = []
@@ -60,10 +61,26 @@ class Histories(object):
         self._tm_mask[np.eye(num_nodes).flatten() == 1] = False
         self._time = time
 
+        # # hzb
+        # self._tms_dict = {}
+        # self._opts_dict = {}
+        # # end
+
         for fname in files_tms:
-            print('[+] Populating TMS.')
+            # print('[+] Populating TMS.')
+            print(f'[+] Populating TMS. {fname}')
+            # # hzb
+            # len_tms = len(self._tms)
+            # len_opts = len(self._opts)
+            # # end
+
             self._populate_tms(fname, tm_length_func)
             self._read_opt(fname)
+
+            # # hzb
+            # self._tms_dict[fname] = self._tms[len_tms:]
+            # self._opts_dict[fname] = self._opts[len_opts:]
+            # # end
 
         for fname in files_latent:
             print('[+] Populating latent representation for RL.')
@@ -76,7 +93,7 @@ class Histories(object):
                 self._opts += [np.float64(_) for _ in lines]
         except:
             return None
-        
+
     def _populate_tms(self, fname, tm_length_func):
         """生成流量矩阵tm，和时间序列"""
         with open(fname) as f:
@@ -88,7 +105,7 @@ class Histories(object):
                     pdb.set_trace()
 
                 tm_time = tm_length_func()
-                tm = SizeConsts.BPS_TO_GBPS(tm) # 流量化为GB级别
+                tm = SizeConsts.BPS_TO_GBPS(tm)  # 流量化为GB级别
                 self._tms.append(tm)
                 self._tm_times.append(tm_time)
 
@@ -104,7 +121,7 @@ class Histories(object):
     def _parse_latent_line(self, line):
         latent = np.array([np.float64(_) for _ in line.split(" ") if _], dtype=np.float64)
         return latent
-    
+
     def _parse_tm_line(self, line, time):
         # 为什么把0去掉啊
         # 就只看非零流量的情形？
@@ -115,10 +132,10 @@ class Histories(object):
             tm = tm[2:]
         num_nodes = int(np.sqrt(tm.shape[0]))
         tm = tm.reshape((num_nodes, num_nodes))
-        
+
         tm = (tm - tm * np.eye(num_nodes))  # 去除自己到自己的流量
         return tm.flatten()[self._tm_mask]
-    
+
     def get_next(self):
         tm = self._tms[self._tm_ind]
         tm_time = self._tm_times[self._tm_ind]
@@ -134,16 +151,12 @@ class Histories(object):
         else:
             self._tm_ind = (self._tm_ind + 1) % self._max_steps
         return latent, tm_time, opt_val
-    
+
     def num_tms(self):
         return len(self._tms)
-    
+
     def num_histories(self):
         return 1
-    
+
     def reset(self):
         self._tm_ind = 0
-
-
-
-
