@@ -10,6 +10,7 @@ import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
+import pandas as pd
 from networking_env.environments.ecmp.env_args_parse import parse_args
 from networking_env.environments.ecmp import history_env
 from networking_env.environments.consts import SOMode
@@ -27,7 +28,8 @@ class DmDataset(Dataset):
         assert props != None and env != None and is_test != None
 
         num_nodes = env.get_num_nodes()
-        env.test(is_test)  # test 什么
+        if my_tms is None and my_opts is None:
+            env.test(is_test)  # test 什么
         # 历史流量矩阵 维度[8080,22*21]，5个hist文件，每个文件包含2016个流量矩阵
         # 去除自己到自己的流量后，每个流量矩阵的流量剩下 22*22 - 22 = 22*21 = 462
 
@@ -245,6 +247,7 @@ def loss_fn_maxflow_maxconc(y_pred_batch, y_true_batch, env):
 # 解析执行参数（flags）
 props = parse_args(sys.argv[1:])
 env = history_env.ECMPHistoryEnv(props)
+
 # 创建稀疏矩阵
 ctp_coo = env._optimizer._commodities_to_paths.tocoo()
 # 化为稀疏矩阵Tensor
@@ -319,34 +322,58 @@ if props.so_mode == SOMode.TRAIN:  # train
 
 elif props.so_mode == SOMode.TEST:  # test
     # create the dataset
-    test_dataset = DmDataset(props, env, True)
+    # test_dataset = DmDataset(props, env, True)
 
     # hzb
     # 创建多个DMDataset，分别进行测试
     # test your dataset
-    data_dict = env._simulator.get_test_hist_dict()
+    env.test(True)  # 测试集数据
+    tm_dict = env._simulator._cur_hist._tms_dict
+    opt_dict = env._simulator._cur_hist._opts_dict
+    test_dl_dict = {}
+    for key in tm_dict.keys():
+        print(key)
+        test_dataset = DmDataset(props, env, True, tm_dict[key], opt_dict[key])
+        test_dl_dict[key] = DataLoader(test_dataset, batch_size=1, shuffle=False)
+
     # end
 
     # create a data loader for the test set
-    test_dl = DataLoader(test_dataset, batch_size=1, shuffle=False)
+    # test_dl = DataLoader(test_dataset, batch_size=1, shuffle=False)
     # load the model
     model = torch.load('model_dote.pkl')
     model.eval()
     with torch.no_grad():
-        with tqdm(test_dl) as tests:
-            test_losses = []
-            for (inputs, targets) in tests:
-                pred = model(inputs)
-                test_loss, test_loss_val = loss_fn(pred, targets, env)
-                test_losses.append(test_loss_val)
-                tests.set_postfix(loss_val=test_loss_val)
+        test_losses_dict = {}  # 记录各个tm文件的loss
+        for key in test_dl_dict.keys():
+            print(f'test tm file: {key}')
+            test_dl = test_dl_dict[key]
+            with tqdm(test_dl) as tests:
+                test_losses = []
+                for (inputs, targets) in tests:
+                    pred = model(inputs)
+                    test_loss, test_loss_val = loss_fn(pred, targets, env)
+                    test_losses.append(test_loss_val)
+                    tests.set_postfix(loss_val=test_loss_val)
 
-            avg_loss = sum(test_losses) / len(test_losses)
-            print(f"Test Error: \n Avg loss: {avg_loss:>8f} \n")
+                avg_loss = sum(test_losses) / len(test_losses)
+                print(f"Test Error: \n Avg loss: {avg_loss:>8f} \n")
+                test_losses_dict[key] = test_losses
 
-            # print statistics to file
-            with open(props.graph_base_path + '/' + props.ecmp_topo + '/' + 'burst_data_compare.txt', 'w') as f:
-                None
+        # print statistics to file
+        for key in test_losses_dict.keys():
+            print(f'{key} len: {len(test_losses_dict[key])}')
+        losses_dict_pd = pd.DataFrame.from_dict(test_losses_dict)
+        print(losses_dict_pd)
+
+        # with open(props.graph_base_path + '/' + props.ecmp_topo + '/' + 'burst_data_compare.txt', 'w') as f:
+        #     # idx, key1, key2, key3
+        #     keys = test_losses_dict.keys()
+        #     header = 'idx'
+        #     for key in keys:
+        #         header += ' ' + key
+        #     header += '\n'
+        #     f.write(header)
 
 # elif props.so_mode == SOMode.TEST:  # test
 #     # create the dataset

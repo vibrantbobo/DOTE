@@ -61,26 +61,30 @@ class Histories(object):
         self._tm_mask[np.eye(num_nodes).flatten() == 1] = False
         self._time = time
 
-        # # hzb
-        # self._tms_dict = {}
-        # self._opts_dict = {}
-        # # end
+        # hzb
+        self._tms_dict = {}
+        self._opts_dict = {}
+        # end
 
         for fname in files_tms:
             # print('[+] Populating TMS.')
             print(f'[+] Populating TMS. {fname}')
-            # # hzb
-            # len_tms = len(self._tms)
-            # len_opts = len(self._opts)
-            # # end
+            # hzb
+            len_tms = len(self._tms)
+            len_opts = len(self._opts)
+            # end
 
             self._populate_tms(fname, tm_length_func)
             self._read_opt(fname)
 
-            # # hzb
-            # self._tms_dict[fname] = self._tms[len_tms:]
-            # self._opts_dict[fname] = self._opts[len_opts:]
-            # # end
+            # hzb
+            if htype=='test':
+                fni = fname.rfind("\\")
+                tm_file_name=fname[fni+1:]
+                self._tms_dict[tm_file_name] = self._tms[len_tms:]
+                self._opts_dict[tm_file_name] = self._opts[len_opts:]
+                # print(self._tms_dict.keys())
+            # end
 
         for fname in files_latent:
             print('[+] Populating latent representation for RL.')

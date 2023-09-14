@@ -25,21 +25,21 @@ class TMSimulator(object):
                                     test_hist_files_latent,
                                     max_steps=self._props.max_path_length + self._props.hist_len)
 
-        # hzb
-        self._test_hist_dict = {}
-        for fname in test_hist_files:
-            self._test_hist_dict[fname] = Histories(fname, "test",
-                                                    self._num_nodes,
-                                                    props.time,
-                                                    test_hist_files_latent,
-                                                    max_steps=self._props.max_path_length + self._props.hist_len)
-        # end
 
+        # hzb
+        # self._test_hist_dict = {}
+        # for fname in test_hist_files:
+        #     self._test_hist_dict[fname] = Histories(fname, "test",
+        #                                             self._num_nodes,
+        #                                             props.time,
+        #                                             test_hist_files_latent,
+        #                                             max_steps=self._props.max_path_length + self._props.hist_len)
+        # end
         props.num_train_histories = self._train_hist.num_tms()
         props.num_test_histories = self._test_hist.num_tms()
 
-    def get_test_hist_dict(self):
-        return self._test_hist_dict
+    # def get_test_hist_dict(self):
+    #     return self._test_hist_dict
 
     def get_time(self):
         return self._cur_time

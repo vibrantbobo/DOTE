@@ -4,7 +4,7 @@ import subprocess
 
 ######################################################
 # 生成部分文件的opt
-gen_opt_hist_files = ['9.hist', '10.hist', '11.hist', '12.hist']
+gen_opt_hist_files = ['9.hist', '4_scale_burst_3.hist', '4_partial_scale_burst_3.hist', '4_random_burst_0.1_3.hist', '4_scale_2.hist', '4_scale_4.hist', '4_scale_6.hist', '4_scale_8.hist']
 
 ######################################################
 opts_dir_prefix = 'opts_'
@@ -24,17 +24,17 @@ train_opts_dir = opts_dir_prefix + 'train'
 if not os.path.exists(test_opts_dir): os.mkdir(test_opts_dir)
 if not os.path.exists(train_opts_dir): os.mkdir(train_opts_dir)
 #
-# subprocess.run(['python', '../../ml/sl_algos/evaluate.py', '--ecmp_topo', topology_name, '--hist_len', '0', '--sl_type',
-#                 'stats_comm', '--compute_opts', '--paths_from', paths_from], check=True)
-# subprocess.run(
-#     ['python', '../../ml/sl_algos/evaluate.py', '--ecmp_topo', topology_name, '--hist_len', '0', '--sl_type', 'eval',
-#      '--compute_opts', '--opts_dir', test_opts_dir], check=True)
-#
-# subprocess.run(['python', '../../ml/sl_algos/evaluate.py', '--ecmp_topo', topology_name, '--hist_len', '0', '--sl_type',
-#                 'stats_comm', '--compute_opts', '--compute_opts_dir', 'train'], check=True)
-# subprocess.run(
-#     ['python', '../../ml/sl_algos/evaluate.py', '--ecmp_topo', topology_name, '--hist_len', '0', '--sl_type', 'eval',
-#      '--compute_opts', '--compute_opts_dir', 'train', '--opts_dir', train_opts_dir], check=True)
+subprocess.run(['python', '../../ml/sl_algos/evaluate.py', '--ecmp_topo', topology_name, '--hist_len', '0', '--sl_type',
+                'stats_comm', '--compute_opts', '--paths_from', paths_from], check=True)
+subprocess.run(
+    ['python', '../../ml/sl_algos/evaluate.py', '--ecmp_topo', topology_name, '--hist_len', '0', '--sl_type', 'eval',
+     '--compute_opts', '--opts_dir', test_opts_dir], check=True)
+
+subprocess.run(['python', '../../ml/sl_algos/evaluate.py', '--ecmp_topo', topology_name, '--hist_len', '0', '--sl_type',
+                'stats_comm', '--compute_opts', '--compute_opts_dir', 'train'], check=True)
+subprocess.run(
+    ['python', '../../ml/sl_algos/evaluate.py', '--ecmp_topo', topology_name, '--hist_len', '0', '--sl_type', 'eval',
+     '--compute_opts', '--compute_opts_dir', 'train', '--opts_dir', train_opts_dir], check=True)
 
 for d in ['test']:
     print(os.getcwd())
