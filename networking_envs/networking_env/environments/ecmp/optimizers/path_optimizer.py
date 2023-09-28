@@ -53,6 +53,17 @@ class PathOptimizer(Optimizer):
                 except: import pdb; pdb.set_trace()
 
     def _paths_from_file(self):
+        """
+        tunnels.txt 所采用的格式
+        pij[(i,j)]: (i,j)的路径节点列表
+        pij[(i,j)]=[
+            [路径边元组(i,k),(k,j)...], # p1
+            [路径边元组], # p2
+            ...
+        ]
+        pid: 路径id
+
+        """
         paths_file = "%s/%s/%s"%(self.props.graph_base_path, self.props.ecmp_topo, self.props.paths_file)
         pij = defaultdict(list)
         pid = 0

@@ -59,6 +59,6 @@ for i in range(len(opts_info)):
 
         input_file_idx += 1
 
-    with open(opts_info[i][0], 'w') as f:
+    with open('test/'+opts_info[i][0], 'w') as f:
         for o in opt_res_for_actual_demands:
             f.write(str(o) + '\n')

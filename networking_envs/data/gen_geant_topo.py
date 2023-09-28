@@ -3,7 +3,7 @@ import pathlib
 import math
 import urllib.request
 
-
+# 根据此拓扑文件构造拓扑，该文件已下载：./geant-20041125.gml
 topology_file = "http://informatique.umons.ac.be/networks/igen/downloads/geant-20041125.gml"
 demand_matrices_dir = "directed-geant-uhlig-15min-over-4months-ALL-native"
 output_dir = "GEANT"
@@ -45,6 +45,7 @@ else:
     f.close()
     lines = [line.strip() for line in lines]
 
+# 根据图谱文件构造拓扑
 i = 0
 while i < len(lines):
     if lines[i].startswith("node ["):
