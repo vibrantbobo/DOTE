@@ -127,7 +127,7 @@ class Histories(object):
         return latent
 
     def _parse_tm_line(self, line, time):
-        # 为什么把0去掉啊
+        # 为什么把0去掉啊 A:去掉自己到自己的
         # 就只看非零流量的情形？
         tm = np.array([np.float64(_) for _ in line.split(" ") if _], dtype=np.float64)
 
